@@ -20,11 +20,20 @@ pythonのdataframeのめんどくさい作業から今すぐに開放されま�
 5. 置換する
 6. 欠損部分を埋める
 
->指定した列を削除します。<br>
+### settings
+- [drop](#drop)
+- [apply](#apply)
+- [combinations](#combinations)
+- [replace](#replace)
+- [fill](#fill)
+- [template](#template)
+
+#### 指定した列を削除します。<br>
 >```
 >"<column_name>" : None
 >```
 
+#### drop
 >列に含まれる特定の値を削除します。<br>
 >```
 >"<column_name>" : {
@@ -47,6 +56,7 @@ pythonのdataframeのめんどくさい作業から今すぐに開放されま�
 >>}
 >>```
 
+#### apply
 >列に含まれる値に対して関数を適用します。<br>
 >```
 >"<column_name>" : {
@@ -57,6 +67,7 @@ pythonのdataframeのめんどくさい作業から今すぐに開放されま�
 >}
 >```
 
+#### combinations
 >指定された値を重複無し組み合わせ生成し replace に置換候補として設定します。<br>
 >```
 >"<column_name>" : {
@@ -89,6 +100,7 @@ pythonのdataframeのめんどくさい作業から今すぐに開放されま�
 >>}
 >>```
 
+#### replace
 >列に存在する値を指定された値へと置換します。<br>
 >もし combinations を指定している場合は、値が自動的に生成され replace に設定されるます。<br>
 >再度、replace で指定する必要がありません。<br>
@@ -112,7 +124,8 @@ pythonのdataframeのめんどくさい作業から今すぐに開放されま�
 >>}
 >>```
 
->欠損値の代わりに値を代入します。<br>
+#### fill
+> 欠損値の代わりに値を代入します。<br>
 >```
 >"<column_name>" : {
 >  "fill" : <None | int | float | str>
@@ -125,6 +138,7 @@ pythonのdataframeのめんどくさい作業から今すぐに開放されま�
 >>値を指定した場合の動作<br>
 >>値をそのまま代入します。
 
+#### template
 ```
 settings={
   "paths":{
