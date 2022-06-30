@@ -3,19 +3,35 @@ Requried 2 libraries
 /pandas
 /numpy
 
-ver 2.2
+ver 2.3
 """ 
 
 class Processing:
+    PATH = "path"
+    PATH_INPUT = (PATH, "input")
+    PATH_OUTPUT = (PATH, "output")
+    APPLY = "apply"
+    APPLY_FUNC = (APPLY, "func")
+    APPLY_ARGS = (APPLY, "args")
+    FILL = "fill"
+    SPLIT = "split"
+    COMBINATION = "combinations"
+    DROP = "drop"
+    REPLACE = "replace"
+    
     def __init__(self, settings:dict):
         self.settings = settings
         self._func_prop = {"drop":self.__drop,"apply":self.__apply,"combinations":self.__combinations,"replace": self.__replace, "fill": self.__fill}
     
+        
     def __drop(self, _name, _prop):
         # print(f"_drop {_name}")
         
         for item in _prop["drop"]:
-            self.dataframe.drop(self.dataframe.loc[self.dataframe[_name]==item].index, inplace=True)
+            if item is None:
+                self.dataframe.loc[:, _name].dropna(inplace=True)
+            else:
+                self.dataframe.drop(self.dataframe.loc[self.dataframe[_name]==item].index, inplace=True)
 
     def __apply(self, _name, _prop):
         # print(f"_apply {_name}")
@@ -30,10 +46,10 @@ class Processing:
         comb = dict()
         # データの番号
         idx = 0
-        
+        _prop_combinations = _prop["combinations"]
         # 指定された項目を重複なしで全通りの組み合わせを出力する処理
-        for i in range(1,len(_prop["combinations"])):
-            for label in combinations(_prop["combinations"], i):
+        for i in range(1,len(_prop_combinations)+1):
+            for label in combinations(_prop_combinations, i):
                 # print(label, idx)
                 comb.setdefault(label, idx)
                 idx += 1
@@ -78,7 +94,7 @@ class Processing:
                 
                 if value != -1:
                     # print(target, value)
-                    self.dataframe.loc[:, _name] = self.dataframe.loc[:, _name].replace(target,value)
+                    self.dataframe.loc[:, _name].replace(target,value, inplace=True)
             return
         except:
             pass
@@ -87,7 +103,7 @@ class Processing:
             _prop_replace = _prop["replace"]
             # print(_prop_replace)
             for key, value in _prop_replace.items():
-                self.dataframe.loc[:, _name] = self.dataframe.loc[:, _name].replace(key,value)
+                self.dataframe.loc[:, _name].replace(key,value, inplace=True)
         except:
             # replaceがNoneである場合、自動的に文字列を数値に変換する処理
             # 列ごとに含まれるデータ取得、重複を排除、添え字追加、辞書型に変換
@@ -98,40 +114,40 @@ class Processing:
                     # 文字列じゃない場合、既に置換済みとみなし繰り返しから脱出
                     break
                 # 文字列である場合、列が置換済みではないと見なし置換処理
-                self.dataframe.loc[:, _name] = self.dataframe.loc[:, _name].replace(key, value)
+                self.dataframe.loc[:, _name].replace(key, value, inplace=True)
                     
             # 置換データを保存する
             _prop.setdefault("replace", _prop_replace)
 
     def __fill(self, _name, _prop):
         # print(f"_fill {_name}")
-        from numpy import unsignedinteger,signedinteger,floating,complexfloating
+        import numpy
         # 欠損値を埋めるための値を取得
         _prop_fill = _prop["fill"]
         
         if _prop_fill is None:
             # 指定されていない場合は、型に沿って0で埋める
             data_type = self.dataframe.loc[:, _name].dtype.type
-            if data_type is unsignedinteger or signedinteger:
+            if data_type is numpy.unsignedinteger or numpy.signedinteger:
                 _value = 0
-            elif data_type is floating or complexfloating:
+            elif data_type is numpy.floating or numpy.complexfloating:
                 _value = 0.0
         else:
             # 指定されてる値を代入
             _value = _prop_fill
         
         # 欠損値を埋める
-        self.dataframe.loc[:, _name] = self.dataframe.loc[:, _name].fillna(_value)
+        self.dataframe.loc[:, _name].fillna(_value, inplace=True)
 
     def execute(self):
-        from pandas import read_csv
+        import pandas as pd
         # データ読み込み
-        self.dataframe = read_csv(self.settings["paths"]["input"])
+        self.dataframe = pd.read_csv(self.settings["paths"]["input"])
 
         for _name, _prop in self.settings["columns"].items():
             if _prop is None:
                 # もしも列名に対して値がNoneの場合、列を削除処理
-                self.dataframe = self.dataframe.drop(_name, axis=1)
+                self.dataframe.drop(_name, axis=1, inplace=True)
                 # print(f"_droped column {_name}")
                 pass
             else:
@@ -154,11 +170,11 @@ class Generating:
         self.settings = settings
         
     def execute(self):
-        from pandas import DataFrame, read_csv
+        import pandas as pd
         from random import randint
         
-        dataframe = read_csv(self.settings["paths"]["input"])
-        testdataframe = DataFrame()
+        dataframe = pd.read_csv(self.settings["paths"]["input"])
+
         val_dict = dict()
         init_dict = dict()
         columns = dataframe.head(0)
@@ -169,7 +185,11 @@ class Generating:
             __min = min(data)
             __max = max(data)
             val_dict.setdefault(column, (__min, __max))
-        
+
+        from pandas import DataFrame
+
+        dataframe = DataFrame()
+
         for i in range(self.settings["test_size"]):
             _temp = dict()
             for column in columns:
@@ -177,6 +197,6 @@ class Generating:
                 __max = val_dict[column][1]
                 __rand= randint(__min, __max)
                 _temp.setdefault(column, __rand)
-            testdataframe = testdataframe.append(_temp, ignore_index=True)
+            dataframe = dataframe.append(_temp, ignore_index=True)
 
-        testdataframe.to_csv(self.settings["paths"]["output"], index=False)
+        dataframe.to_csv(self.settings["paths"]["output"], index=False)
