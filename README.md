@@ -1,5 +1,15 @@
 # frameforge
 
+## 必要なライブラリ
+- pandas
+- numpy
+
+## python動作環境確認したもの
+|python|frameforge|
+|---|---|
+|3.8|2.3|
+|3.9|2.3|
+
 pythonのdataframeのめんどくさい作業から今すぐに開放されましょう。
 <br>
 ### 処理される順番
