@@ -119,7 +119,7 @@ pythonのdataframeのめんどくさい作業から今すぐに開放されま�
 <br>
 >>具体的な例<br>
 >>この場合は、列に存在する値が str型の「sea」であれば int型の「0」に、<br>
-もしくはstr型の「mountain」であれば int型の「1」に置換するという動作をする。<br>
+>>もしくはstr型の「mountain」であれば int型の「1」に置換するという動作をする。<br>
 >>```
 >>"<column_name>" : {
 >>  "replace" : {"sea":0,"mountain":1}
