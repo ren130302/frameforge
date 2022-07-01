@@ -21,6 +21,7 @@ pythonのdataframeのめんどくさい作業から今すぐに開放されま�
 6. 欠損部分を埋める
 
 ### settings
+- [dropna](#dropna)
 - [drop](#drop)
 - [apply](#apply)
 - [combinations](#combinations)
@@ -28,7 +29,8 @@ pythonのdataframeのめんどくさい作業から今すぐに開放されま�
 - [fill](#fill)
 - [template](#template)
 
-#### 指定した列を削除します。<br>
+#### dropna
+>指定した列を削除します。<br>
 >```
 >"<column_name>" : None
 >```
