@@ -1,18 +1,22 @@
 # frameforge
 
+dataframe のコーディング量を減らすためのクラスを提供します。
+python の dataframe のめんどくさい作業から今すぐに開放されましょう。
+
 ## 必要なライブラリ
+
 - pandas
 - numpy
 
-## python動作環境確認したもの
-|python|frameforge|
-|---|---|
-|3.8|2.3|
-|3.9|2.3|
+## python 動作環境確認したもの
 
-pythonのdataframeのめんどくさい作業から今すぐに開放されましょう。
-<br>
-### 処理される順番
+| python | frameforge |
+| ------ | ---------- |
+| 3.8    | 2.3        |
+| 3.9    | 2.3        |
+
+## 処理される順番
+
 1. 列の削除する
 2. 特定の値の削除する
 3. 値に対して関数を適用する
@@ -20,7 +24,8 @@ pythonのdataframeのめんどくさい作業から今すぐに開放されま�
 5. 置換する
 6. 欠損部分を埋める
 
-### settings
+# 設定の仕方
+
 - [dropna](#dropna)
 - [drop](#drop)
 - [apply](#apply)
@@ -29,129 +34,162 @@ pythonのdataframeのめんどくさい作業から今すぐに開放されま�
 - [fill](#fill)
 - [template](#template)
 
-#### dropna
->指定した列を削除します。<br>
->```
->"<column_name>" : None
->```
+## dropna
 
-#### drop
->列に含まれる特定の値を削除します。<br>
->```
->"<column_name>" : {
->  "drop" : <None | list | set | tuple> 
->}
->```
->>Noneを指定した場合の動作<br>
->>欠損値のみ行から排除します。<br>
->>```
->>"<column_name>" : {
->>  "drop" : None
->>}
->>```
->
->>list, set, tupleいずれかの型で複数を列挙した場合の動作<br>
->>列に含まれる 0,1,2,3,4,5,欠損値 いずれか一つ存在する場合、行ごとに削除されます<br>
->>```
->>"<column_name>" : {
->>  "drop" : [0,1,2,3,4,5,None] 
->>}
->>```
+指定した列を削除します。
 
-#### apply
->列に含まれる値に対して関数を適用します。<br>
->```
->"<column_name>" : {
->  "apply" : {
->    "func":<function>, 
->    "args":<args>
->  }
->}
->```
-
-#### combinations
->指定された値を重複無し組み合わせ生成し replace に置換候補として設定します。<br>
->```
->"<column_name>" : {
->  "combinations":<list | set | tuple>
->}
->```
->>列に存在する値の型が文字列かつ区切り文字が含まれていて、<br>
->>完全一致したときにのみに文字列置換を行いたい場合の指定の仕方。<br>
->>```
->>"<column_name>" : {
->>  "combinations":<list | set | tuple>
->>  "split" : <str>,
->>}
->>```
->>具体的な例
->>```
->>csv before
->>I-was,100
->>```
->>```
->>csv after
->>2,100
->>```
->>```
->>python
->>"<column_name>" : {
->>  "combinations": ["I","was"]
->>  "split" : "-",
->>  """combinations によって自動生成された"""
->>  "replace": {("I"):0, ("was"):2, ("I","was"):3}
->>}
->>```
-
-#### replace
->列に存在する値を指定された値へと置換します。<br>
->もし combinations を指定している場合は、値が自動的に生成され replace に設定されるます。<br>
->再度、replace で指定する必要がありません。<br>
->combinations と replace を指定した場合の動作は replace で指定されたもので置換されます。<br>
->```
->"<column_name>" : {
->  "replace" : <None | dict>
->}
->```
->>Noneを指定した場合の動作<br>
->>列に存在する値を自動的に数値へ変換します。<br>
->
->>値を指定した場合の動作<br>
->>値をそのまま置換します。<br>
->><br>
->>具体的な例<br>
->>この場合は、列に存在する値が str型の「sea」であれば int型の「0」に、<br>
->>もしくはstr型の「mountain」であれば int型の「1」に置換するという動作をする。<br>
->>```
->>"<column_name>" : {
->>  "replace" : {"sea":0,"mountain":1}
->>}
->>```
-
-#### fill
-> 欠損値の代わりに値を代入します。<br>
->```
->"<column_name>" : {
->  "fill" : <None | int | float | str>
->}
->```
->
->>Noneを指定した場合の動作<br>
->>対応する型の初期値を代入します。<br>
->
->>値を指定した場合の動作<br>
->>値をそのまま代入します。
-
-#### template
 ```
-settings={
-  "paths":{
-    "input" :"<読込ファイル名>.csv",
-    "output":"<保存ファイル名>.csv",
-  },
-  "columns":{
-    "<column_name>" : None
-  }
+"column_name" : None
+```
+
+#### 記述例
+
+列「No」を排除する場合
+
+```
+"No" : None
+```
+
+## drop
+
+列に含まれる特定の値を削除します。
+
+```
+"column_name" : {
+    "drop" : <None | list | set | tuple>
+}
+```
+
+### None を指定した場合の動作
+
+列に含まれる欠損値が存在する場合、行ごと削除されます。
+
+#### 記述例
+
+列「Type」に存在する欠損値を排除する場合
+
+```
+"Type" : {
+    "drop" : None
+}
+```
+
+### list, set, tuple いずれかの型で複数を列挙した場合の動作
+
+指定した値のいずれか一つに合致した場合、行ごと削除されます。
+
+#### 記述例
+
+列「Type」に存在する値「0,1,2,欠損値」いずれか一つ合致させ、行ごとに削除する。
+
+```
+"Type" : {
+    "drop" : [0,1,2,None]
+}
+```
+
+## apply
+
+列に含まれる値に対して指定された関数を適用します。
+
+```
+"column_name" : {
+    "apply" : {
+        "func":function,
+        "args":args
+    }
+}
+```
+
+## combinations
+
+指定された値を重複無し組み合わせ生成し、replace に置換候補として設定します。
+
+```
+"column_name" : {
+    "combinations":<list | set | tuple>
+}
+```
+
+#### 記述例
+
+```
+"column_name" : {
+    "combinations": ["I","was"]
+    "split" : "-",
+    """combinationsによって自動生成されたコード"""
+    "replace": {("I"):0, ("was"):2, ("I", "was"):3}
+}
+```
+
+## replace
+
+列に存在する値を指定された値へと置換します。
+
+combinations を指定している場合は、値が自動的に生成され replace に設定されます。<br>
+つまり、replace に指定をしなくても良いということです。<br>
+combinations と replace の両方を指定した場合は、<br>
+replace で指定されたものが有効となり置換の処理がされてしまいます。<br>
+つまり、combinations で指定したことが無意味となります。<br>
+
+```
+"column_name" : {
+    "replace" : <None | dict>
+}
+```
+
+### None を指定した場合の動作
+
+列に存在する値を自動的に数値へ変換します。
+
+```
+"column_name" : {
+    "replace" : None
+}
+```
+
+### 値を指定した場合の動作
+
+指定された値に置換します。
+
+#### 記述例
+
+この場合は、列に存在する値が str 型の「sea」であれば int 型の「0」に、<br>
+もしくは str 型の「mountain」であれば int 型の「1」に置換する処理を行う。
+
+```
+"column_name" : {
+    "replace" : {"sea":0, "mountain":1}
+}
+```
+
+## fill
+
+```
+"column_name" : {
+    "fill" : <None | int | float | str>
+}
+```
+
+### None を指定した場合の動作
+
+対応する型の初期値を代入します。
+
+### 値を指定した場合の動作
+
+指定された値を代入します
+
+## template
+
+```
+settings = {
+    "paths" : {
+        "input" : csv,
+        "output": csv,
+    },
+    "columns":{
+        "column_name" : None
+    }
 }
 Processing(settings).execute()
 ```
