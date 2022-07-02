@@ -131,6 +131,7 @@ combinations を指定している場合は、値が自動的に生成され rep
 combinations と replace の両方を指定した場合は、<br>
 replace で指定されたものが有効となり置換の処理がされてしまいます。<br>
 つまり、combinations で指定したことが無意味となります。<br>
+combinationsで生成された値を設定したい場合は、手動で設定するしかありません。<br>
 
 ```
 "column_name" : {
